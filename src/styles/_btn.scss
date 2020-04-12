@@ -1,0 +1,41 @@
+.btn-link {
+  &:hover {
+    text-decoration: none;
+    color: darken($primary, 20%);
+  }
+  &:focus {
+    text-decoration: none;
+  }
+}
+
+.btn-icon {
+  border: 0;
+  padding: 0;
+  background: transparent;
+  -webkit-appearance: none;
+  &:focus {
+    outline: 0;
+  }
+}
+
+.btn-with-icon {
+  display: flex;
+  align-items: center;
+
+  .icon {
+    width: 1rem;
+    height: 1rem;
+  }
+
+  &-left {
+    .icon {
+      margin-right: 0.5rem;
+    }
+  }
+
+  &-right {
+    .icon {
+      margin-left: 0.5rem;
+    }
+  }
+}

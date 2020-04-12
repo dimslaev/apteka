@@ -1,0 +1,104 @@
+.modal {
+  &-header {
+    padding-bottom: 0;
+    .close {
+      &:focus {
+        outline: 0;
+      }
+    }
+  }
+
+  &-title {
+    text-transform: capitalize;
+  }
+
+  &-footer {
+    border-top: 1px solid $gray-400;
+
+    > * {
+      margin: 0;
+    }
+
+    .btn-link {
+      color: $dark;
+      &:hover {
+        color: darken($dark, 20%);
+      }
+    }
+  }
+
+  @include media-breakpoint-down("sm") {
+    &-header {
+      padding: 1rem 1rem 0;
+    }
+    &-body {
+      padding: 1rem;
+    }
+    &-footer {
+      padding: 1rem;
+    }
+  }
+}
+
+.modal-document {
+  &-col {
+    dl {
+      dt {
+        display: flex;
+        text-transform: capitalize;
+        .btn-copy {
+          display: flex;
+          position: relative;
+          padding: 0;
+          background: transparent;
+          margin-left: 0.5rem;
+
+          .text {
+            display: none;
+            position: absolute;
+            left: 0.75rem;
+            top: 0;
+            padding: 0.25rem;
+            text-transform: lowercase;
+            font-size: 0.75rem;
+            line-height: 1;
+          }
+
+          .icon {
+            cursor: pointer;
+            width: 12px;
+            height: 12px;
+
+            svg path {
+              fill: $gray-400;
+            }
+          }
+
+          &:hover,
+          &.focus {
+            .text {
+              display: block;
+            }
+
+            .icon {
+              svg path {
+                fill: $gray-600;
+              }
+            }
+          }
+        }
+      }
+      dd {
+        text-transform: capitalize;
+      }
+    }
+    &-vin,
+    &-plate {
+      dl {
+        dd {
+          text-transform: uppercase;
+        }
+      }
+    }
+  }
+}

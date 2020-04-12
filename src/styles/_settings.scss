@@ -1,0 +1,153 @@
+.settings {
+  margin-bottom: 3rem;
+
+  &-section {
+    button[type='submit'] {
+      min-width: 200px;
+    }
+  }
+
+  @include media-breakpoint-down('md') {
+    &.accordion {
+      > .card > .collapse > .card-body {
+        padding: 0rem 1.25rem 0.75rem;
+      }
+    }
+  }
+
+  @include media-breakpoint-down('sm') {
+    margin-top: -1rem;
+    margin-left: -22.5px;
+    margin-right: -22.5px;
+    margin-bottom: 0;
+
+    &.accordion {
+      > .card {
+        border-radius: 0;
+      }
+      .accordion-item-toggle {
+        flex-grow: 0;
+        flex-basis: 3.875rem;
+        margin-top: 0;
+      }
+    }
+
+    &-section {
+      button[type='submit'] {
+        width: 100%;
+      }
+    }
+  }
+}
+
+.payment-card {
+  position: relative;
+
+  &:not(.add-new) {
+    .card-header,
+    .card-body,
+    .card-footer {
+      background-color: $gray-100;
+    }
+  }
+
+  .card-header,
+  .card-body {
+    height: 3rem;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+  }
+
+  .card-footer {
+    height: 2.5rem;
+  }
+
+  .icon-plus {
+    position: absolute;
+    left: 50%;
+    top: 2rem;
+    margin-left: -1.25rem;
+    width: 2.5rem;
+    height: 2.5rem;
+    padding: 0.25rem;
+    background-color: $primary;
+    border-radius: 50%;
+  }
+
+  &.add-new {
+    .text {
+      line-height: 1.2;
+      position: relative;
+      top: 1.25rem;
+    }
+
+    border: 2px dashed $gray-400;
+
+    .card-header,
+    .card-body,
+    .card-footer {
+      background-color: transparent;
+    }
+
+    .card-footer {
+      height: calc(2.5rem - 4px);
+    }
+  }
+}
+
+.divider {
+  border-bottom: 1px solid $gray-100;
+  margin-left: -2rem;
+  margin-right: -2rem;
+}
+
+.warning {
+  display: flex;
+  align-items: center;
+  background: rgba($warning, 0.25);
+  color: $gray-900;
+  padding: 1.5rem 1.5rem 1.5rem 0;
+  margin-bottom: 1.5rem;
+  border-radius: $border-radius;
+
+  .icon {
+    width: 1.5rem;
+    height: 1.5rem;
+    margin-left: 1.5rem;
+    margin-right: 1.5rem;
+
+    svg circle {
+      fill: $primary;
+    }
+    svg path {
+      fill: $white;
+    }
+  }
+
+  .text {
+    color: #444;
+  }
+
+  @include media-breakpoint-down('sm') {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 1rem;
+
+    .icon {
+      margin: 0 0 0.5rem;
+    }
+  }
+}
+
+.terms-window {
+  padding: 1rem;
+  background: $gray-100;
+  border-radius: $border-radius;
+
+  &-scroller {
+    height: 8.5rem;
+    overflow: scroll;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+  }
+}

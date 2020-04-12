@@ -1,0 +1,33 @@
+.login {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &-content {
+    .icon {
+      width: 2.5rem;
+      height: 2.5rem;
+      padding: 0.75rem;
+      background: $primary;
+      border-radius: 50%;
+
+      svg path {
+        fill: $white;
+      }
+    }
+  }
+
+  &-content {
+    width: 100%;
+    max-width: 380px;
+  }
+
+  @include media-breakpoint-down("sm") {
+    &-header {
+      padding: 2rem 2rem 1rem;
+    }
+    &-body {
+      padding: 2rem;
+    }
+  }
+}

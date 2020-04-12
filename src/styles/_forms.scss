@@ -1,0 +1,178 @@
+.form-label {
+  color: $gray-600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  font-size: $h5-font-size;
+  font-weight: 600;
+  line-height: 1.25rem;
+}
+
+.form-control:disabled,
+.form-control[readonly] {
+  opacity: 0.5;
+}
+
+.was-validated .form-control:valid,
+.form-control.is-valid {
+  background-size: 1rem;
+}
+
+.form-check,
+.form-check-inline {
+  .form-check-label {
+    position: relative;
+    user-select: none;
+    padding-left: 0.25rem;
+    &:before,
+    &:after {
+      content: "";
+      display: block;
+      position: absolute;
+      top: 0.125rem;
+      left: -1.25rem;
+      width: 1.25rem;
+      height: 1.25rem;
+      border-radius: 50%;
+    }
+    &:before {
+      border: 2px solid $gray-400;
+      border-radius: 50%;
+    }
+    &:after {
+      display: none;
+      background-repeat: no-repeat;
+      background-position: center center;
+    }
+  }
+  .form-check-input {
+    visibility: hidden;
+
+    &[type="checkbox"] {
+      + .form-check-label {
+        &:after {
+          background-image: url("data:image/svg+xml,%3Csvg width='12' height='9' viewBox='0 0 12 9' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill-rule='evenodd' clip-rule='evenodd' d='M11.601 0.39935C11.933 0.731296 11.933 1.26949 11.601 1.60143L4.67175 8.53072C4.30075 8.90172 3.69924 8.90172 3.32824 8.53072L0.398953 5.60143C0.0670075 5.26949 0.0670075 4.7313 0.398953 4.39935C0.730899 4.0674 1.26909 4.0674 1.60103 4.39935L3.99999 6.79831L10.399 0.39935C10.7309 0.0674042 11.2691 0.0674042 11.601 0.39935Z' fill='%23FAFAFA'/%3E%3C/svg%3E%0A");
+        }
+      }
+
+      &:checked + .form-check-label {
+        &:before {
+          border-color: $primary;
+          background-color: $primary;
+        }
+        &:after {
+          display: block;
+        }
+      }
+    }
+
+    &[type="radio"] {
+      + .form-check-label {
+        &:after {
+          background-image: url("data:image/svg+xml,%3Csvg width='10' height='10' viewBox='0 0 10 10' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='5' cy='5' r='5' fill='%23359ECD'/%3E%3C/svg%3E%0A");
+        }
+      }
+
+      &:checked + .form-check-label {
+        &:before {
+          border-color: $primary;
+        }
+        &:after {
+          display: block;
+        }
+      }
+    }
+  }
+}
+
+.form-help-text {
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 2.625rem;
+  background-color: $gray-600;
+  margin-top: 2rem;
+  padding: 0 0.5rem;
+  color: $white;
+  border-radius: $border-radius;
+
+  span {
+    font-size: 0.75rem;
+    line-height: 1rem;
+    font-weight: 600;
+    letter-spacing: 0.2px;
+    max-height: 2rem;
+    overflow: hidden;
+  }
+
+  &:before {
+    display: block;
+    content: "";
+    position: absolute;
+    top: 14px;
+    left: -5px;
+    width: 7px;
+    height: 14px;
+    background-image: url("data:image/svg+xml,%3Csvg width='7' height='14' viewBox='0 0 7 14' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M6.33594 0L6.33588 13.4439L0.275523 7.38824C-0.0917706 7.02094 -0.0917706 6.42291 0.275523 6.05562L6.33594 0Z' fill='%2386898D'/%3E%3C/svg%3E%0A");
+  }
+
+  @include media-breakpoint-down("sm") {
+    margin-top: 0;
+    margin-bottom: 2rem;
+    &:before {
+      transform: rotate(90deg);
+      top: -9px;
+      left: 50%;
+      margin-left: -7px;
+    }
+  }
+}
+
+.form-label-help {
+  text-transform: none;
+}
+
+.input-group {
+  background: $input-bg;
+  border-radius: $border-radius;
+
+  .spinner-border {
+    display: none;
+    color: $gray-600;
+  }
+
+  &.focused {
+    background: $input-focus-bg;
+  }
+
+  &.loading {
+    .spinner-border {
+      display: block;
+    }
+  }
+
+  &-prepend,
+  &-append {
+    align-items: center;
+  }
+
+  &-prepend {
+    padding-left: 1rem;
+  }
+  &-append {
+    padding-right: 1rem;
+  }
+}
+
+.form-group {
+  &.required {
+    .form-label {
+      position: relative;
+      &:after {
+        content: "*";
+        color: $danger;
+        position: absolute;
+        right: -1rem;
+      }
+    }
+  }
+}

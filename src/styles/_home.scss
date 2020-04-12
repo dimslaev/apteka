@@ -1,0 +1,63 @@
+.plans {
+  .plan {
+    height: 100%;
+    margin: 0 auto;
+
+    &-header {
+      background-color: $white;
+      padding: 2rem 2rem 0;
+    }
+
+    &-body {
+      padding: 1.5rem 2rem;
+    }
+
+    &-footer {
+      padding: 0 2rem 2rem;
+      background-color: $white;
+    }
+
+    &-icon {
+      width: 4rem;
+      height: 4rem;
+      padding: 1.25rem;
+      border-radius: 50%;
+      background-color: rgba($primary, 0.3);
+    }
+
+    &-list {
+      padding: 0;
+      margin: 0;
+      list-style: none;
+
+      &-item {
+        text-align: left;
+        display: flex;
+        align-items: flex-start;
+
+        .icon {
+          flex-basis: 1.5rem;
+          margin-right: 0.5rem;
+        }
+        p {
+          flex-basis: calc(100% - 2rem);
+        }
+
+        &:last-child p {
+          margin-bottom: 0.5rem;
+        }
+      }
+    }
+
+    @include media-breakpoint-down("sm") {
+      height: auto;
+      margin: 0 auto 2rem;
+    }
+  }
+}
+
+.hero-title {
+  @include media-breakpoint-down("sm") {
+    font-size: 2rem;
+  }
+}
