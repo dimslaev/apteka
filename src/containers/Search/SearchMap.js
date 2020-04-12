@@ -1,23 +1,13 @@
 import React, { useState, useRef, useEffect, useContext } from "react";
 import { SearchContext } from "./index";
+import { isEmpty } from "../../utils";
 import mapboxgl from "mapbox-gl";
 
-mapboxgl.accessToken =
-  "pk.eyJ1IjoiZGlzbGFlIiwiYSI6ImNrOG5hNDR4ZzA5enUzbm1lZmFtaGZkNDcifQ.pyAejMYB22UlrnXbQx7Qjw";
+mapboxgl.accessToken = process.env.REACT_APP_MAPBOX_KEY;
 
 let lastSearchResults = [];
 
-function isEmpty(obj) {
-  for (var prop in obj) {
-    if (obj.hasOwnProperty(prop)) {
-      return false;
-    }
-  }
-
-  return JSON.stringify(obj) === JSON.stringify({});
-}
-
-const inititateMapbox = (el, position) =>
+const initMapbox = (el, position) =>
   new mapboxgl.Map({
     container: el,
     style: "mapbox://styles/mapbox/streets-v11",
@@ -26,7 +16,26 @@ const inititateMapbox = (el, position) =>
     height: 400,
   });
 
+const initMarker = (mapInstance, coords, index, activeIndex) => {
+  const marker = new mapboxgl.Marker({
+    color:
+      index === -1 ? "#ff5f29" : index === activeIndex ? "#274462" : "#359ecd",
+  })
+    .setLngLat(coords)
+    .addTo(mapInstance);
+
+  const markerEl = marker.getElement();
+  markerEl.dataset.index = index;
+
+  if (index === activeIndex) markerEl.style.zIndex = 2;
+  if (index === -1) markerEl.classList.add("mapboxgl-marker-me");
+
+  return marker;
+};
+
 export default function SearchMap() {
+  const [mapInstance, setMapInstance] = useState(null);
+  const mapRef = useRef(null);
   const {
     from,
     userPosition,
@@ -36,81 +45,59 @@ export default function SearchMap() {
     setActiveIndex,
   } = useContext(SearchContext);
 
-  const [mapInstance, setMapInstance] = useState(null);
-  const mapRef = useRef(null);
-
   useEffect(() => {
     const position = from === "user-position" ? userPosition : addressPosition;
+    const markers = [];
+    const bounds = new mapboxgl.LngLatBounds();
+    const myCoords = [position.longitude, position.latitude];
+    const handleMarkerClick = (e) => {
+      const marker = e.originalEvent.target.closest(".mapboxgl-marker");
+      if (!marker) return;
+
+      const index = +marker.dataset.index;
+
+      setActiveIndex(index);
+    };
 
     if (!mapRef.current || isEmpty(position)) return;
 
-    const markers = [];
-
     if (!mapInstance) {
-      setMapInstance(inititateMapbox(mapRef.current, position));
-    } else {
-      const bounds = new mapboxgl.LngLatBounds();
+      setMapInstance(initMapbox(mapRef.current, position));
+      return;
+    }
 
-      const myGPSMarker = new mapboxgl.Marker({
-        color: "#ff5f29",
-      })
-        .setLngLat([position.longitude, position.latitude])
-        .addTo(mapInstance);
+    const markerMe = initMarker(mapInstance, myCoords, -1, activeIndex);
 
-      const myGPSMarkerEl = myGPSMarker.getElement();
-      myGPSMarkerEl.dataset.index = -1;
-      myGPSMarkerEl.classList.add("mapboxgl-marker-me");
+    markers.push(markerMe);
+    bounds.extend(myCoords);
 
-      markers.push(myGPSMarker);
-      bounds.extend([position.longitude, position.latitude]);
+    if (searchResults.length > 0) {
+      searchResults.forEach(function (item, index) {
+        const coords = [
+          item.data().coordinates.longitude,
+          item.data().coordinates.latitude,
+        ];
 
-      if (searchResults.length > 0) {
-        searchResults.forEach(function (item, index) {
-          const data = item.data();
-          const coords = [
-            data.coordinates.longitude,
-            data.coordinates.latitude,
-          ];
+        const marker = initMarker(mapInstance, coords, index, activeIndex);
 
-          const marker = new mapboxgl.Marker({
-            color: index === activeIndex ? "#274462" : "#359ecd",
-          })
-            .setLngLat(coords)
-            .addTo(mapInstance);
-
-          const markerEl = marker.getElement();
-          markerEl.dataset.index = index;
-
-          if (index === activeIndex) markerEl.style.zIndex = 2;
-
-          markers.push(marker);
-          bounds.extend(coords);
-        });
-
-        if (searchResults !== lastSearchResults) {
-          mapInstance.fitBounds(bounds, {
-            padding: { top: 50, bottom: 50, left: 50, right: 50 },
-            easing(t) {
-              return t * (2 - t);
-            },
-          });
-          lastSearchResults = searchResults;
-        }
-      }
-
-      const handleMarkerClick = (e) => {
-        const marker = e.originalEvent.target.closest(".mapboxgl-marker");
-        if (!marker) return;
-
-        const index = +marker.dataset.index;
-
-        setActiveIndex(index);
-      };
-
-      mapInstance.on("load", function () {
-        mapInstance.on("click", handleMarkerClick);
+        markers.push(marker);
+        bounds.extend(coords);
       });
     }
+
+    if (searchResults !== lastSearchResults) {
+      mapInstance.fitBounds(bounds, {
+        padding: { top: 50, bottom: 50, left: 50, right: 50 },
+        easing(t) {
+          return t * (2 - t);
+        },
+      });
+      lastSearchResults = searchResults;
+    }
+
+    mapInstance.on("load", () => {
+      mapInstance.on("click", handleMarkerClick);
+    });
 
     return function cleanup() {
       markers.forEach((item) => {

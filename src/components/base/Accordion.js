@@ -1,6 +1,5 @@
 import React from "react";
 import { Accordion as AccordionBS, Card, Row } from "react-bootstrap";
-// import Icon from "./Icon";
 
 export function Accordion({ children, activeKey, ...props }) {
   return (
