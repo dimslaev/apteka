@@ -1,18 +1,9 @@
 import React, { useState, useRef, useContext } from "react";
 import { Col, Form, Modal, Button } from "react-bootstrap";
 import ButtonLoader from "../../components/base/ButtonLoader";
-import { SearchContext } from "./index";
+import { SearchContext } from "./SearchProvider";
 import axios from "axios";
-
-function isEmpty(obj) {
-  for (var prop in obj) {
-    if (obj.hasOwnProperty(prop)) {
-      return false;
-    }
-  }
-
-  return JSON.stringify(obj) === JSON.stringify({});
-}
+import { isEmpty } from "../../utils";
 
 const defaultErrors = {
   no: false,

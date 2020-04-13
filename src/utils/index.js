@@ -29,3 +29,33 @@ export function isEmpty(obj) {
 
   return JSON.stringify(obj) === JSON.stringify({});
 }
+
+export function smoothScrollTo(elToScroll, elToScrollTo, offset) {
+  const y1 = elToScroll.scrollTop;
+  const y2 = offset ? elToScrollTo.offsetTop + offset : elToScrollTo.offsetTop;
+  const distance = Math.abs(y2 - y1);
+  const direction = y2 > y1 ? "down" : "up";
+  const t1 = performance.now();
+  const t2 = 400;
+  const easingFn = (t) => t * (2 - t);
+
+  const tick = () => {
+    const elapsed = performance.now() - t1;
+    const progress = Math.min(elapsed / t2, 1);
+    const temp = easingFn(progress) * distance;
+    const y = direction === "down" ? y1 + temp : y1 - temp;
+
+    if (progress < 1) {
+      elToScroll.scrollTop = y;
+      requestAnimationFrame(tick);
+    } else {
+      elToScroll.scrollTop = y2;
+    }
+  };
+
+  if (distance === 0) {
+    return;
+  }
+
+  requestAnimationFrame(tick);
+}

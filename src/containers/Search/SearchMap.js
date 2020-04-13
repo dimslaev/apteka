@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useContext } from "react";
-import { SearchContext } from "./index";
+import { SearchContext } from "./SearchProvider";
 import { isEmpty } from "../../utils";
 import mapboxgl from "mapbox-gl";
 

@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import { Col, Card } from "react-bootstrap";
 import Icon from "../../components/base/Icon";
-import { SearchContext } from "./index";
+import { SearchContext } from "./SearchProvider";
 import { types } from "../../utils/types";
 
 const defaultCounts = [];
