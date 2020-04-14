@@ -3,7 +3,6 @@ import { Container, Row, Col, Card, Button } from "react-bootstrap";
 import Header from "../../components/app/Header";
 import Footer from "../../components/app/Footer";
 import Icon from "../../components/base/Icon";
-import { types } from "../../utils/types";
 
 export default function Home() {
   return (
@@ -17,23 +16,6 @@ export default function Home() {
           </h1>
           <Row>
             <Col xs={12} lg={{ span: 8, offset: 2 }}>
-              <Row className="facets mb-4 mb-md-5">
-                {types.map((item) => (
-                  <Col key={item.id}>
-                    <Card className="facets-item active" key={item.id}>
-                      <div className="facets-item-icon">
-                        <Icon type={item.id} />
-                      </div>
-                      <div className="facets-item-label text-center">
-                        <p className="font-12-semibold text-secondary mb-0">
-                          {item.label}
-                        </p>
-                      </div>
-                    </Card>
-                  </Col>
-                ))}
-              </Row>
-
               <Row className="plans">
                 <Col md={6}>
                   <Card className="plan first">

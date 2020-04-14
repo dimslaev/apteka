@@ -39,33 +39,36 @@ sessionStorage.setItem(
 export default function SearchProvider({ children }) {
   const [searchResults, setSearchResults] = useState([]);
 
-  // user position
   const [userPosition, setUserPosition] = useState(
     JSON.parse(sessionStorage.getItem("user-position")),
   );
 
-  // address
   const [address, setAddress] = useState(
     JSON.parse(sessionStorage.getItem("address")) || defaultAddress,
   );
+
   const [addressPosition, setAddressPosition] = useState(
     JSON.parse(sessionStorage.getItem("address-position")),
   );
+
   const [addressModal, setAddressModal] = useState(false);
 
-  // search bar
   const [showBar, setShowBar] = useState(true);
+
   const [product, setProduct] = useState(
     sessionStorage.getItem("product") || "mask",
   );
+
   const [radius, setRadius] = useState(
     JSON.parse(sessionStorage.getItem("radius")) || 1,
   );
+
   const [from, setFrom] = useState(
     sessionStorage.getItem("from") || "user-position",
   );
 
   const [loading, setLoading] = useState(false);
+
   const [filterFacets, setFilterFacets] = useState({
     mask: true,
     gloves: true,
@@ -74,15 +77,14 @@ export default function SearchProvider({ children }) {
     vitaminD: true,
     vitaminZn: true,
   });
+
   const [error, setError] = useState(false);
+
   const [modal, setModal] = useState(defaultModal);
+
   const [activeIndex, setActiveIndex] = useState(-1);
 
-  const handleModalClose = () => {
-    setModal(defaultModal);
-  };
-
-  const submitSearch = async (e) => {
+  async function submitSearch(e) {
     if (e) e.preventDefault();
     if (loading) return;
 
@@ -102,56 +104,30 @@ export default function SearchProvider({ children }) {
     setError(false);
     setLoading(true);
 
-    const coords =
+    const coordinates =
       from === "user-position"
-        ? [userPosition.latitude, userPosition.longitude]
-        : [addressPosition.latitude, addressPosition.longitude];
+        ? [+userPosition.latitude, +userPosition.longitude]
+        : [+addressPosition.latitude, +addressPosition.longitude];
 
-    const setNoResults = () => {
+    const results = await getSearchResults(product, coordinates, radius);
+
+    if (!results.length) {
       setError("error-no-results");
       setSearchResults([]);
-      setLoading(false);
-    };
-
-    const geosnapshot = await geocollectionProviders
-      .near({
-        center: new firebase.firestore.GeoPoint(+coords[0], +coords[1]),
-        radius: +radius,
-      })
-      .get();
+    } else {
+      setSearchResults(results);
+    }
 
     setShowBar(false);
+    setLoading(false);
 
-    const docs = geosnapshot.docs;
-    if (!docs.length) {
-      setNoResults();
-      return false;
-    }
-
-    const results = docs.filter((item) => {
-      const products = item.data().products;
-      const match = products.find((p) => p.id === product);
-      return match.qty > 0;
-    });
-
-    if (results.length === 0) {
-      setNoResults();
-      return false;
-    } else {
-      const sortedResults = results.sort((a, b) => a.distance - b.distance);
-      setSearchResults(sortedResults);
-      setLoading(false);
-      return sortedResults;
-    }
-  };
+    return results;
+  }
 
   useEffect(() => {
     if (userPosition) return;
 
-    async function getLatLng() {
-      const url = process.env.REACT_APP_IP_URL;
-      const response = await axios.get(url);
-
+    getLatLng().then(function (response) {
       if (response.status === 200) {
         sessionStorage.setItem("user-position", JSON.stringify(response.data));
         if (!sessionStorage.getItem("address-position"))
@@ -169,9 +145,7 @@ export default function SearchProvider({ children }) {
           content: "Sorry, there was an error retrieving your location.",
         });
       }
-    }
-
-    getLatLng();
+    });
   }, [userPosition, addressPosition]);
 
   return (
@@ -207,9 +181,45 @@ export default function SearchProvider({ children }) {
       }}
     >
       {children}
-      <Modal show={modal.show} title={modal.title} onHide={handleModalClose}>
+      <Modal
+        show={modal.show}
+        title={modal.title}
+        onHide={() => setModal(defaultModal)}
+      >
         {modal.content}
       </Modal>
     </SearchContext.Provider>
   );
+}
+
+function filterSortResults(searchTerm, searchResults) {
+  // Return only results for searched product
+  const results = searchResults.filter((item) => {
+    const products = item.data().products;
+    const match = products.find((p) => p.id === searchTerm);
+    return match.qty > 0;
+  });
+
+  return results.sort((a, b) => a.distance - b.distance);
+}
+
+async function getSearchResults(searchTerm, coordinates, radius) {
+  console.log(coordinates);
+  const geosnapshot = await geocollectionProviders
+    .near({
+      center: new firebase.firestore.GeoPoint(coordinates[0], coordinates[1]),
+      radius: +radius,
+    })
+    .get();
+
+  if (!geosnapshot.docs.length) return [];
+
+  console.log(geosnapshot.docs);
+
+  return filterSortResults(searchTerm, geosnapshot.docs);
+}
+
+async function getLatLng() {
+  const url = process.env.REACT_APP_IP_URL;
+  return await axios.get(url);
 }
