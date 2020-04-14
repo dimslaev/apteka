@@ -83,16 +83,16 @@ export default function SearchMap() {
         markers.push(marker);
         bounds.extend(coords);
       });
-    }
 
-    if (searchResults !== lastSearchResults) {
-      mapInstance.fitBounds(bounds, {
-        padding: { top: 50, bottom: 50, left: 50, right: 50 },
-        easing(t) {
-          return t * (2 - t);
-        },
-      });
-      lastSearchResults = searchResults;
+      if (searchResults !== lastSearchResults) {
+        mapInstance.fitBounds(bounds, {
+          padding: { top: 50, bottom: 50, left: 50, right: 50 },
+          easing(t) {
+            return t * (2 - t);
+          },
+        });
+        lastSearchResults = searchResults;
+      }
     }
 
     mapInstance.on("load", () => {

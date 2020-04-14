@@ -18,7 +18,7 @@ export default function SearchBar() {
 
   return (
     <Row>
-      <Col lg={{ span: 12 }}>
+      <Col xl={{ span: 10 }}>
         <Form
           className={`search-bar${!showBar ? " hidden" : ""}`}
           onSubmit={submitSearch}

@@ -1,28 +1,14 @@
 import React, { useContext, useEffect, useState } from "react";
-import { Col, Card } from "react-bootstrap";
-import Icon from "../../components/base/Icon";
+import Facets from "../../components/app/Facets";
 import { SearchContext } from "./SearchProvider";
-import { types } from "../../utils/types";
 
-const defaultCounts = [];
-
-types.forEach((item, index) => {
-  defaultCounts.push({
-    ...types[index],
-    qty: 0,
-  });
-});
-
-export default function Facets() {
+export default function SearchFacets() {
   const { searchResults } = useContext(SearchContext);
 
-  const [counts, setCounts] = useState(defaultCounts);
+  const [counts, setCounts] = useState({});
 
   useEffect(() => {
-    if (!searchResults.length) {
-      setCounts(defaultCounts);
-      return;
-    }
+    if (!searchResults.length) return;
 
     const firstSearchResultProducts = searchResults[0].data().products;
     const arr = JSON.parse(JSON.stringify(firstSearchResultProducts));
@@ -40,25 +26,5 @@ export default function Facets() {
     setCounts(arr);
   }, [searchResults]);
 
-  return (
-    <div className="facets">
-      {counts.map((item) => (
-        <Col key={item.id}>
-          <Card className="facets-item active" key={item.id}>
-            <div className="facets-item-count">
-              <span className="font-14-bold text-secondary">{item.qty}</span>
-            </div>
-            <div className="facets-item-icon">
-              <Icon type={item.id} />
-            </div>
-            <div className="facets-item-label text-center">
-              <p className="font-12-semibold text-secondary mb-0">
-                {item.label}
-              </p>
-            </div>
-          </Card>
-        </Col>
-      ))}
-    </div>
-  );
+  return <Facets counts={counts} className="results-facets d-none d-xl-flex" />;
 }

@@ -59,3 +59,8 @@ export function smoothScrollTo(elToScroll, elToScrollTo, offset) {
 
   requestAnimationFrame(tick);
 }
+
+export function clsx(classes = []) {
+  if (Array.isArray(classes) && classes.length) return classes.join(" ");
+  return "";
+}

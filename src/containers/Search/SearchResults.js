@@ -1,6 +1,7 @@
 import React, { useContext, useRef, useEffect } from "react";
 import { Row, Col, Card } from "react-bootstrap";
 import Icon from "../../components/base/Icon";
+import Facets from "../../components/app/Facets";
 import { SearchContext } from "./SearchProvider";
 import { smoothScrollTo } from "../../utils";
 
@@ -16,23 +17,22 @@ export default function SearchResults() {
     const activeResult = scrollArea.childNodes[activeIndex];
 
     if (!activeResult) return;
-    const offset =
-      window.innerWidth < 992 ? 0 : -(activeResult.offsetHeight + 12);
-    smoothScrollTo(scrollArea, activeResult, offset);
+    // const offset =
+    //   window.innerWidth < 992 ? 0 : -(activeResult.offsetHeight + 12);
+    smoothScrollTo(scrollArea, activeResult, 0);
   }, [scrollAreaRef, activeIndex]);
 
   return (
     <div className="results">
       <div className="results-inner" ref={scrollAreaRef}>
-        {searchResults.length > 0 &&
+        {searchResults.length > 0 ? (
           searchResults.map((item, index) => (
             <ResultItem key={item.id} item={item} index={index} />
-          ))}
-        {error === "error-no-results" && (
-          <p
-            className="text-center text-white mb-0"
-            style={{ width: "100%" }}
-          >{`Sorry, there were no results found near you.`}</p>
+          ))
+        ) : error === "error-no-results" ? (
+          <p className="text-center text-white mb-0">{`Sorry, there were no results found near you.`}</p>
+        ) : (
+          <p className="text-center text-white mb-0 mt-3 mt-lg-0">{`Results will appear here.`}</p>
         )}
       </div>
     </div>
@@ -45,14 +45,14 @@ function ResultItem({ item, index }) {
   const { profile, products } = item.data();
   const { store, address, city } = profile;
 
-  const getQtyLabel = (qty) => {
-    if (qty === 0 || qty > 1) return " units";
-    else return " unit";
-    // if (pricePerLabel === "piece") return "pieces";
-    // else if (pricePerLabel === "box") return "boxes";
-    // else if (pricePerLabel === "pair") return "pairs";
-    // else return pricePerLabel;
-  };
+  // const getQtyLabel = (qty) => {
+  //   if (qty === 0 || qty > 1) return " units";
+  //   else return " unit";
+  //   // if (pricePerLabel === "piece") return "pieces";
+  //   // else if (pricePerLabel === "box") return "boxes";
+  //   // else if (pricePerLabel === "pair") return "pairs";
+  //   // else return pricePerLabel;
+  // };
 
   const getDistanceLabel = (value) => {
     if (value < 1) return Math.round(value * 1000) + " m";
@@ -75,21 +75,7 @@ function ResultItem({ item, index }) {
         </div>
 
         <div className="result-products">
-          <Row>
-            {products.map((item, index) => (
-              <Col key={index}>
-                <div className="result-products-item">
-                  <Icon type={item.id} />
-                  <div className="text">
-                    <span>{item.qty}</span>
-                    <span className="d-none d-sm-inline">
-                      {getQtyLabel(item.qty)}
-                    </span>
-                  </div>
-                </div>
-              </Col>
-            ))}
-          </Row>
+          <Facets counts={products} className="result-facets" />
         </div>
       </Card.Body>
     </Card>

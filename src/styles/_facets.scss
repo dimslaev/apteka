@@ -1,9 +1,10 @@
 .facets {
   display: flex;
   flex-wrap: wrap;
+  width: 100%;
 
-  padding-left: 7.5px;
-  padding-right: 7.5px;
+  margin-left: -7.5px;
+  margin-right: -7.5px;
 
   > .col {
     padding-left: 7.5px;
@@ -15,21 +16,24 @@
     position: relative;
     height: 0;
     padding-bottom: 82.5%;
-    background-color: rgba($gray-300, 0.5);
+    background-color: $gray-300;
 
     &-count {
       position: absolute;
-      top: 0.25rem;
+      top: 0.35rem;
       right: 0.5rem;
+      font-size: 0.875rem;
+      font-weight: 600;
     }
 
     &-icon {
       position: absolute;
-      top: 50%;
+      top: 57%;
       left: 50%;
       transform: translate(-50%, -50%);
 
       .icon {
+        display: block;
         width: 2.5rem;
         height: 2.5rem;
       }
@@ -37,45 +41,38 @@
 
     &-label {
       position: absolute;
-      bottom: 0.5rem;
+      bottom: 0.3rem;
       left: 0.5rem;
       right: 0.5rem;
       line-height: 1.15;
     }
+  }
+}
 
-    &.active {
-      position: relative;
-      background-color: $gray-300;
+.results-facets {
+  padding: 1.5rem 1.5rem 0;
+}
+
+.result-facets {
+  margin-left: -2.5px;
+  margin-left: -2.5px;
+  width: 460px;
+
+  .col {
+    padding-left: 2.5px;
+    padding-right: 2.5px;
+  }
+  .facets-item {
+    background: rgba($gray-400, 0.5);
+  }
+  .facets-item-icon {
+    .icon {
+      width: 1.75rem;
+      height: 1.75rem;
     }
   }
-
-  @include media-breakpoint-down("md") {
-    &-item {
-      &-icon {
-        .icon {
-          width: 2rem;
-          height: 2rem;
-        }
-      }
-    }
-  }
-
-  @include media-breakpoint-down("sm") {
-    justify-content: flex-start;
-
-    > .col {
-      flex-basis: 33.33333%;
-      flex-grow: 0;
-    }
-
-    &-item {
-      margin-bottom: 15px;
-      &-icon {
-        .icon {
-          width: 2rem;
-          height: 2rem;
-        }
-      }
-    }
+  .facets-item-count {
+    font-size: 0.75rem;
+    color: rgba($gray-700, 0.8);
   }
 }
