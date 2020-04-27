@@ -6,9 +6,11 @@ import { SearchContext } from "./SearchProvider";
 import { smoothScrollTo } from "../../utils";
 
 export default function SearchResults() {
-  const { searchResults, error, activeIndex } = useContext(SearchContext);
-
+  const { state } = useContext(SearchContext);
+  const { searchResults, error, activeIndex } = state;
   const scrollAreaRef = useRef(null);
+
+  console.log(searchResults);
 
   useEffect(() => {
     const scrollArea = scrollAreaRef.current;
@@ -40,7 +42,8 @@ export default function SearchResults() {
 }
 
 function ResultItem({ item, index }) {
-  const { activeIndex, setActiveIndex } = useContext(SearchContext);
+  const { state, setState } = useContext(SearchContext);
+  const { activeIndex } = state;
   const { distance } = item;
   const { profile, products } = item.data();
   const { store, address, city } = profile;
@@ -62,7 +65,7 @@ function ResultItem({ item, index }) {
   return (
     <Card
       className={`result${activeIndex === index ? " active" : ""}`}
-      onClick={() => setActiveIndex(index)}
+      onClick={() => setState({ ...state, activeIndex: index })}
     >
       <Card.Body>
         <Row>

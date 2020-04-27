@@ -7,59 +7,36 @@ mapboxgl.accessToken = process.env.REACT_APP_MAPBOX_KEY;
 
 let lastSearchResults = [];
 
-const initMapbox = (el, position) =>
-  new mapboxgl.Map({
-    container: el,
-    style: "mapbox://styles/mapbox/streets-v11",
-    center: [position.longitude, position.latitude],
-    zoom: 14,
-    height: 400,
-  });
-
-const initMarker = (mapInstance, coords, index, activeIndex) => {
-  const marker = new mapboxgl.Marker({
-    color:
-      index === -1 ? "#ff5f29" : index === activeIndex ? "#274462" : "#359ecd",
-  })
-    .setLngLat(coords)
-    .addTo(mapInstance);
-
-  const markerEl = marker.getElement();
-  markerEl.dataset.index = index;
-
-  if (index === activeIndex) markerEl.style.zIndex = 2;
-  if (index === -1) markerEl.classList.add("mapboxgl-marker-me");
-
-  return marker;
-};
-
 export default function SearchMap() {
   const [mapInstance, setMapInstance] = useState(null);
   const mapRef = useRef(null);
-  const {
-    from,
-    userPosition,
-    addressPosition,
-    searchResults,
-    activeIndex,
-    setActiveIndex,
-  } = useContext(SearchContext);
+  const { state, setState } = useContext(SearchContext);
 
   useEffect(() => {
+    const {
+      from,
+      userPosition,
+      addressPosition,
+      searchResults,
+      activeIndex,
+    } = state;
+
     const position = from === "user-position" ? userPosition : addressPosition;
+
+    if (!mapRef.current || isEmpty(position) || !position) return;
+
     const markers = [];
     const bounds = new mapboxgl.LngLatBounds();
     const myCoords = [position.longitude, position.latitude];
-    const handleMarkerClick = (e) => {
+
+    function handleMarkerClick(e) {
       const marker = e.originalEvent.target.closest(".mapboxgl-marker");
       if (!marker) return;
 
       const index = +marker.dataset.index;
 
-      setActiveIndex(index);
-    };
-
-    if (!mapRef.current || isEmpty(position)) return;
+      setState({ ...state, activeIndex: index });
+    }
 
     if (!mapInstance) {
       setMapInstance(initMapbox(mapRef.current, position));
@@ -110,20 +87,38 @@ export default function SearchMap() {
         mapInstance.remove();
       }
     };
-  }, [
-    mapRef,
-    mapInstance,
-    from,
-    userPosition,
-    addressPosition,
-    searchResults,
-    activeIndex,
-    setActiveIndex,
-  ]);
+  }, [mapRef, mapInstance, state, setState]);
 
   return (
     <div className="map-container">
       <div ref={mapRef} className="map"></div>
     </div>
   );
+}
+
+function initMapbox(el, position) {
+  return new mapboxgl.Map({
+    container: el,
+    style: "mapbox://styles/mapbox/streets-v11",
+    center: [position.longitude, position.latitude],
+    zoom: 14,
+    height: 400,
+  });
+}
+
+function initMarker(mapInstance, coords, index, activeIndex) {
+  const marker = new mapboxgl.Marker({
+    color:
+      index === -1 ? "#ff5f29" : index === activeIndex ? "#274462" : "#359ecd",
+  })
+    .setLngLat(coords)
+    .addTo(mapInstance);
+
+  const markerEl = marker.getElement();
+  markerEl.dataset.index = index;
+
+  if (index === activeIndex) markerEl.style.zIndex = 2;
+  if (index === -1) markerEl.classList.add("mapboxgl-marker-me");
+
+  return marker;
 }

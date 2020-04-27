@@ -1,27 +1,66 @@
 import React, { useContext, useRef } from "react";
-import { Row, Col, Form } from "react-bootstrap";
+import { Row, Col, Form, Dropdown, DropdownButton } from "react-bootstrap";
 import Icon from "../../components/base/Icon";
 import ButtonLoader from "../../components/base/ButtonLoader";
-import { SearchContext } from "./SearchProvider";
+import { SearchContext, getSearchResults } from "./SearchProvider";
 import { types } from "../../utils/types.js";
 
 export default function SearchBar() {
-  const { loading, submitSearch, showBar, setShowBar } = useContext(
-    SearchContext,
-  );
+  const { state, setState } = useContext(SearchContext);
+  const {
+    loading,
+    showBar,
+    product,
+    radius,
+    from,
+    userPosition,
+    addressPosition,
+  } = state;
 
   const formEl = useRef(null);
 
   const handleShowBar = () => {
-    setShowBar(!showBar);
+    setState({ ...state, showBar: !state.showBar });
   };
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+
+    setState({ ...state, loading: true, error: false });
+
+    const position = from === "user-position" ? userPosition : addressPosition;
+
+    if (!position) {
+      setState({
+        ...state,
+        modal: {
+          show: true,
+          title: "Error",
+          content: "Sorry, there was an error retrieving your location.",
+        },
+      });
+
+      return;
+    }
+
+    const coordinates = [+position.latitude, +position.longitude];
+    const results = await getSearchResults(product, coordinates, radius);
+
+    setState({
+      ...state,
+      error: !results.length ? "error-no-results" : false,
+      searchResults: !results.length ? [] : results,
+      showBar: false,
+      loading: false,
+    });
+  }
 
   return (
     <Row>
       <Col xl={{ span: 10 }}>
         <Form
           className={`search-bar${!showBar ? " hidden" : ""}`}
-          onSubmit={submitSearch}
+          onSubmit={handleSubmit}
           ref={formEl}
         >
           <div className="search-bar-toggle" onClick={handleShowBar}>
@@ -59,15 +98,18 @@ export default function SearchBar() {
 }
 
 function FormGroupRadios() {
-  const { from, setFrom, setAddressModal } = useContext(SearchContext);
+  const { state, setState } = useContext(SearchContext);
+  const { from } = state;
 
   const handleFromChange = (e) => {
-    setFrom(e.target.value);
+    const value = e.target.value;
     sessionStorage.setItem("from", e.target.value);
 
-    if (e.target.value === "address-position") {
-      setAddressModal(true);
-    }
+    setState({
+      ...state,
+      from: value,
+      addressModal: value === "address-position" ? true : false,
+    });
   };
 
   return (
@@ -105,57 +147,59 @@ function FormGroupRadios() {
 
 function FormGroupDistance() {
   const radiusOptions = [0.5, 1, 3, 5, 10, 1000];
+  const { state, setState } = useContext(SearchContext);
+  const { radius } = state;
 
-  const { radius, setRadius } = useContext(SearchContext);
-
-  const handleRadiusChange = (e) => {
-    setRadius(e.target.value);
-    sessionStorage.setItem("radius", e.target.value);
+  const handleRadiusChange = (radius) => {
+    setState({ ...state, radius });
+    sessionStorage.setItem("radius", radius);
   };
 
   return (
     <Form.Group>
       <Form.Label>Within distance</Form.Label>
 
-      <Form.Control
-        as="select"
-        className="custom-select"
-        value={radius}
-        onChange={handleRadiusChange}
-      >
+      <DropdownButton title={`${radius} km`} variant="default">
         {radiusOptions.map((item, index) => (
-          <option key={index} value={item}>
+          <Dropdown.Item
+            key={index}
+            eventKey={item}
+            onClick={() => handleRadiusChange(item)}
+          >
             {item} km
-          </option>
+          </Dropdown.Item>
         ))}
-      </Form.Control>
+      </DropdownButton>
     </Form.Group>
   );
 }
 
 function FormGroupProduct() {
-  const { product, setProduct } = useContext(SearchContext);
+  const { state, setState } = useContext(SearchContext);
+  const { product } = state;
 
-  const handleProductChange = (e) => {
-    setProduct(e.target.value);
-    sessionStorage.setItem("product", e.target.value);
+  const handleProductChange = (id) => {
+    setState({ ...state, product: id });
+    sessionStorage.setItem("product", id);
   };
 
   return (
     <Form.Group>
       <Form.Label>I'm looking for</Form.Label>
-      <Form.Control
-        as="select"
-        className="custom-select"
-        value={product}
-        onChange={handleProductChange}
+      <DropdownButton
+        title={types.find((p) => p.id === product).label}
+        variant="default"
       >
         {types.map((item, index) => (
-          <option key={index} value={item.id}>
+          <Dropdown.Item
+            key={index}
+            eventKey={item.id}
+            onClick={() => handleProductChange(item.id)}
+          >
             {item.label}
-          </option>
+          </Dropdown.Item>
         ))}
-      </Form.Control>
+      </DropdownButton>
     </Form.Group>
   );
 }

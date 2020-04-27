@@ -6,125 +6,68 @@ import { geocollectionProviders } from "../../AccountStore";
 
 export const SearchContext = React.createContext(null);
 
-const defaultModal = {
-  show: false,
-  title: "",
-  content: "",
-};
+// sessionStorage.setItem("from", "address-position");
+// sessionStorage.setItem(
+//   "address",
+//   JSON.stringify({
+//     no: "10",
+//     street: "Timok",
+//     city: "Plovdiv",
+//   }),
+// );
+// sessionStorage.setItem(
+//   "address-position",
+//   JSON.stringify({
+//     latitude: "42.15530",
+//     longitude: "24.73505",
+//     city: "Plovdiv",
+//   }),
+// );
 
-const defaultAddress = {
-  no: "",
-  street: "",
-  city: "",
-};
+//
+//
+//
+//
+//
+//
 
-sessionStorage.setItem("from", "address-position");
-sessionStorage.setItem(
-  "address",
-  JSON.stringify({
-    no: "10",
-    street: "Timok",
-    city: "Plovdiv",
-  }),
-);
-sessionStorage.setItem(
-  "address-position",
-  JSON.stringify({
-    latitude: "42.15530",
-    longitude: "24.73505",
-    city: "Plovdiv",
-  }),
-);
-
-export default function SearchProvider({ children }) {
-  const [searchResults, setSearchResults] = useState([]);
-
-  const [userPosition, setUserPosition] = useState(
-    JSON.parse(sessionStorage.getItem("user-position")),
-  );
-
-  const [address, setAddress] = useState(
-    JSON.parse(sessionStorage.getItem("address")) || defaultAddress,
-  );
-
-  const [addressPosition, setAddressPosition] = useState(
-    JSON.parse(sessionStorage.getItem("address-position")),
-  );
-
-  const [addressModal, setAddressModal] = useState(false);
-
-  const [showBar, setShowBar] = useState(true);
-
-  const [product, setProduct] = useState(
-    sessionStorage.getItem("product") || "mask",
-  );
-
-  const [radius, setRadius] = useState(
-    JSON.parse(sessionStorage.getItem("radius")) || 1,
-  );
-
-  const [from, setFrom] = useState(
-    sessionStorage.getItem("from") || "user-position",
-  );
-
-  const [loading, setLoading] = useState(false);
-
-  const [filterFacets, setFilterFacets] = useState({
+const defaultState = {
+  searchResults: [],
+  userPosition: JSON.parse(sessionStorage.getItem("user-position")),
+  addressPosition: JSON.parse(sessionStorage.getItem("address-position")),
+  address: JSON.parse(sessionStorage.getItem("address")) || {
+    no: "",
+    street: "",
+    city: "",
+  },
+  showBar: true,
+  product: sessionStorage.getItem("product") || "mask",
+  radius: JSON.parse(sessionStorage.getItem("radius")) || 1,
+  from: sessionStorage.getItem("from") || "user-position",
+  loading: false,
+  facets: {
     mask: true,
     gloves: true,
     sanitizer: true,
     vitaminC: true,
     vitaminD: true,
     vitaminZn: true,
-  });
+  },
+  error: false,
+  modal: {
+    show: false,
+    title: "",
+    content: "",
+  },
+  activeIndex: -1,
+};
 
-  const [error, setError] = useState(false);
-
-  const [modal, setModal] = useState(defaultModal);
-
-  const [activeIndex, setActiveIndex] = useState(-1);
-
-  async function submitSearch(e) {
-    if (e) e.preventDefault();
-    if (loading) return;
-
-    if (
-      (from === "user-position" && !userPosition) ||
-      (from === "address-position" && !addressPosition)
-    ) {
-      setModal({
-        show: true,
-        title: "Error",
-        content: "Sorry, there was an error detecting your location.",
-      });
-
-      return;
-    }
-
-    setError(false);
-    setLoading(true);
-
-    const coordinates =
-      from === "user-position"
-        ? [+userPosition.latitude, +userPosition.longitude]
-        : [+addressPosition.latitude, +addressPosition.longitude];
-
-    const results = await getSearchResults(product, coordinates, radius);
-
-    if (!results.length) {
-      setError("error-no-results");
-      setSearchResults([]);
-    } else {
-      setSearchResults(results);
-    }
-
-    setShowBar(false);
-    setLoading(false);
-
-    return results;
-  }
+export default function SearchProvider({ children }) {
+  const [state, setState] = useState(defaultState);
 
   useEffect(() => {
+    const { userPosition, addressPosition } = state;
+
     if (userPosition) return;
 
     getLatLng().then(function (response) {
@@ -135,58 +78,26 @@ export default function SearchProvider({ children }) {
             "address-position",
             JSON.stringify(response.data),
           );
-
-        setUserPosition(response.data);
-        if (!addressPosition) setAddressPosition(response.data);
-      } else {
-        setModal({
-          show: true,
-          title: "Error",
-          content: "Sorry, there was an error retrieving your location.",
+        setState({
+          ...state,
+          userPosition: response.data,
+          addressPosition: addressPosition ? addressPosition : response.data,
         });
       }
     });
-  }, [userPosition, addressPosition]);
+  }, [state]);
 
   return (
-    <SearchContext.Provider
-      value={{
-        searchResults,
-        setSearchResults,
-        submitSearch,
-        showBar,
-        setShowBar,
-        userPosition,
-        setUserPosition,
-        addressPosition,
-        setAddressPosition,
-        product,
-        setProduct,
-        radius,
-        setRadius,
-        from,
-        setFrom,
-        loading,
-        setLoading,
-        filterFacets,
-        setFilterFacets,
-        error,
-        setError,
-        addressModal,
-        setAddressModal,
-        address,
-        setAddress,
-        activeIndex,
-        setActiveIndex,
-      }}
-    >
+    <SearchContext.Provider value={{ state, setState }}>
       {children}
       <Modal
-        show={modal.show}
-        title={modal.title}
-        onHide={() => setModal(defaultModal)}
+        show={state.modal.show}
+        title={state.modal.title}
+        onHide={() =>
+          setState({ ...state, modal: { show: false, title: "", content: "" } })
+        }
       >
-        {modal.content}
+        {state.modal.content}
       </Modal>
     </SearchContext.Provider>
   );
@@ -203,8 +114,7 @@ function filterSortResults(searchTerm, searchResults) {
   return results.sort((a, b) => a.distance - b.distance);
 }
 
-async function getSearchResults(searchTerm, coordinates, radius) {
-  console.log(coordinates);
+export async function getSearchResults(searchTerm, coordinates, radius) {
   const geosnapshot = await geocollectionProviders
     .near({
       center: new firebase.firestore.GeoPoint(coordinates[0], coordinates[1]),
@@ -213,8 +123,6 @@ async function getSearchResults(searchTerm, coordinates, radius) {
     .get();
 
   if (!geosnapshot.docs.length) return [];
-
-  console.log(geosnapshot.docs);
 
   return filterSortResults(searchTerm, geosnapshot.docs);
 }

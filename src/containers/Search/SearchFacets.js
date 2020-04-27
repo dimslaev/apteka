@@ -3,9 +3,9 @@ import Facets from "../../components/app/Facets";
 import { SearchContext } from "./SearchProvider";
 
 export default function SearchFacets() {
-  const { searchResults } = useContext(SearchContext);
-
   const [counts, setCounts] = useState({});
+  const { state } = useContext(SearchContext);
+  const { searchResults } = state;
 
   useEffect(() => {
     if (!searchResults.length) return;

@@ -15,11 +15,29 @@ $box-shadow: 0 0 20px 8px rgba($secondary, 0.45);
     margin-right: 0;
   }
 
-  .form-control {
-    border-radius: $border-radius;
-    padding: 0.875rem 1.25rem;
-    line-height: 1.25;
-    height: unset;
+  .dropdown {
+    &-toggle {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      padding: 0.875rem 1.25rem;
+      line-height: 1.25;
+      background: $gray-300;
+    }
+
+    &-menu {
+      width: calc(100% - 2.5rem);
+      background: $secondary;
+
+      a {
+        color: #fff;
+
+        &:hover {
+          background: $primary;
+        }
+      }
+    }
   }
 
   button[type="submit"] {
@@ -156,6 +174,7 @@ $box-shadow: 0 0 20px 8px rgba($secondary, 0.45);
 
 .result {
   // background: #ccc;
+  cursor: pointer;
   margin-bottom: 0.75rem;
   &.active {
     background: $primary;

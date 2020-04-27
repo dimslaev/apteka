@@ -1,7 +1,7 @@
 import React, { useState, useRef, useContext } from "react";
 import { Col, Form, Modal, Button } from "react-bootstrap";
 import ButtonLoader from "../../components/base/ButtonLoader";
-import { SearchContext } from "./SearchProvider";
+import { SearchContext, getSearchResults } from "./SearchProvider";
 import axios from "axios";
 import { isEmpty } from "../../utils";
 
@@ -16,27 +16,33 @@ export default function SearchAddress(props) {
   const [formLoading, setFormLoading] = useState(false);
   const [formErrors, setFormErrors] = useState(defaultErrors);
 
-  const {
-    address,
-    setAddress,
-    addressPosition,
-    setAddressPosition,
-    addressModal,
-    setAddressModal,
-    setFrom,
-    submitSearch,
-  } = useContext(SearchContext);
+  const { state, setState } = useContext(SearchContext);
+  const { address, addressPosition, addressModal, product, radius } = state;
 
   const firstInput = useRef(null);
 
   const handleFieldChange = (e) => {
     const id = e.target.id;
     const value = e.target.value;
-    setAddress({ ...address, [id]: value });
+    setState({ ...state, address: { ...address, [id]: value } });
   };
 
   const handleFieldFocus = () => {
     setFormErrors(defaultErrors);
+  };
+
+  const handleAddressModalShow = () => {
+    const firstInput = document.getElementById("no");
+    firstInput.focus();
+  };
+
+  const handleAddressModalClose = () => {
+    console.log("here");
+    if (isEmpty(addressPosition)) {
+      setState({ ...state, from: "user-position" });
+      sessionStorage.setItem("from", "user-position");
+    }
+    setState({ ...state, addressModal: false });
   };
 
   const validateForm = () => {
@@ -85,6 +91,8 @@ export default function SearchAddress(props) {
           city: response.data.standard.city,
         };
 
+        sessionStorage.setItem("address-position", JSON.stringify(position));
+        sessionStorage.setItem("address", JSON.stringify(address));
         handleAddressModalSubmit(position);
       } else {
         setFormErrors({ ...formErrors, wrongAddress: true });
@@ -96,27 +104,19 @@ export default function SearchAddress(props) {
     }
   };
 
-  const handleAddressModalClose = () => {
-    if (isEmpty(addressPosition)) {
-      setFrom("user-position");
-      sessionStorage.setItem("from", "user-position");
-    }
-
-    setAddressModal(false);
-  };
-
   const handleAddressModalSubmit = async (position) => {
-    setAddressPosition(position);
-    sessionStorage.setItem("address-position", JSON.stringify(position));
-    sessionStorage.setItem("address", JSON.stringify(address));
-    await submitSearch();
-    setFormLoading(false);
-    setAddressModal(false);
-  };
+    const coordinates = [+position.latitude, +position.longitude];
+    const results = await getSearchResults(product, coordinates, radius);
 
-  const handleAddressModalShow = () => {
-    const firstInput = document.getElementById("no");
-    firstInput.focus();
+    setState({
+      ...state,
+      addressPosition: position,
+      addressModal: false,
+      error: !results.length ? "error-no-results" : false,
+      searchResults: !results.length ? [] : results,
+      showBar: false,
+      loading: false,
+    });
   };
 
   return (
