@@ -9,14 +9,15 @@ export default function Header({ inverted = false }) {
   const { user, signOut } = useContext(AccountContext);
   const history = useHistory();
 
-  function isNavItemActive(pathname) {
-    return window.location.pathname === pathname;
-  }
+  const isNavItemActive = (pathname) => {
+    console.log(history);
+    return history.location.pathname === pathname;
+  };
 
-  function handleSignOut() {
+  const handleSignOut = () => {
     signOut();
     history.push("/");
-  }
+  };
 
   return (
     <div

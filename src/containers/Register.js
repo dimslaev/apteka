@@ -29,7 +29,7 @@ export default function Register(props) {
   const { signUp } = useContext(AccountContext);
   const history = useHistory();
 
-  function validateForm() {
+  const validateForm = () => {
     const invalidEmail = !validateEmail(fields.email);
     const invalidPassword = fields.password.length < 6;
 
@@ -40,13 +40,13 @@ export default function Register(props) {
     });
 
     return !invalidEmail && !invalidPassword;
-  }
+  };
 
-  function handleFieldFocus(e) {
+  const handleFieldFocus = (e) => {
     setErrors(defaultErrors);
-  }
+  };
 
-  async function handleSubmit(event) {
+  const handleSubmit = async (event) => {
     event.preventDefault();
     if (loading || !validateForm()) return;
 
@@ -63,10 +63,10 @@ export default function Register(props) {
 
     setLoading(false);
 
-    handleSubmitResponse(response);
-  }
+    handlResponse(response);
+  };
 
-  async function handleSubmitResponse(response) {
+  const handlResponse = async (response) => {
     if (response.user) {
       history.push("/dashboard");
     } else if (response.code === "auth/email-already-in-use") {
@@ -76,7 +76,7 @@ export default function Register(props) {
     } else {
       setErrors({ ...defaultErrors, server: true });
     }
-  }
+  };
 
   return (
     <>

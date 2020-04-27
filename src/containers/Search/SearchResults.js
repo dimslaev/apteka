@@ -10,18 +10,14 @@ export default function SearchResults() {
   const { searchResults, error, activeIndex } = state;
   const scrollAreaRef = useRef(null);
 
-  console.log(searchResults);
-
   useEffect(() => {
-    const scrollArea = scrollAreaRef.current;
-    if (!scrollArea) return;
+    if (!scrollAreaRef.current) return;
 
-    const activeResult = scrollArea.childNodes[activeIndex];
+    const activeResult = scrollAreaRef.current.childNodes[activeIndex];
 
     if (!activeResult) return;
-    // const offset =
-    //   window.innerWidth < 992 ? 0 : -(activeResult.offsetHeight + 12);
-    smoothScrollTo(scrollArea, activeResult, 0);
+
+    smoothScrollTo(scrollAreaRef.current, activeResult, 0);
   }, [scrollAreaRef, activeIndex]);
 
   return (
@@ -47,15 +43,6 @@ function ResultItem({ item, index }) {
   const { distance } = item;
   const { profile, products } = item.data();
   const { store, address, city } = profile;
-
-  // const getQtyLabel = (qty) => {
-  //   if (qty === 0 || qty > 1) return " units";
-  //   else return " unit";
-  //   // if (pricePerLabel === "piece") return "pieces";
-  //   // else if (pricePerLabel === "box") return "boxes";
-  //   // else if (pricePerLabel === "pair") return "pairs";
-  //   // else return pricePerLabel;
-  // };
 
   const getDistanceLabel = (value) => {
     if (value < 1) return Math.round(value * 1000) + " m";

@@ -22,7 +22,7 @@ export default function NotFound() {
                 </p>
 
                 <Button onClick={() => history.push("/")}>
-                  Dimslaev Homepage
+                  Apteka Homepage
                 </Button>
               </div>
             </Col>

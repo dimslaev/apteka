@@ -28,7 +28,7 @@ export default function Login(props) {
   const { signIn } = useContext(AccountContext);
   const history = useHistory();
 
-  function validateForm() {
+  const validateForm = () => {
     const invalidEmail = !validateEmail(fields.email);
     const invalidPassword = fields.password.length === 0;
 
@@ -39,13 +39,13 @@ export default function Login(props) {
     });
 
     return !invalidEmail && !invalidPassword;
-  }
+  };
 
-  function handleFieldFocus(e) {
+  const handleFieldFocus = () => {
     setErrors(defaultErrors);
-  }
+  };
 
-  async function handleSubmit(event) {
+  const handleSubmit = async (event) => {
     event.preventDefault();
     if (loading || !validateForm()) return;
 
@@ -62,9 +62,9 @@ export default function Login(props) {
     setLoading(false);
 
     handleSubmitResponse(response);
-  }
+  };
 
-  async function handleSubmitResponse(response) {
+  const handleSubmitResponse = async (response) => {
     if (response.user) {
       history.push("/dashboard");
     }
@@ -74,7 +74,7 @@ export default function Login(props) {
     if (response.code === "auth/wrong-password") {
       setErrors({ ...errors, wrongPassword: true });
     }
-  }
+  };
 
   return (
     <>
@@ -110,11 +110,6 @@ export default function Login(props) {
                 <Form.Group controlId="password">
                   <Form.Label className="d-flex justify-content-between">
                     Password
-                    {/* <Link className="form-label-help" to="/forgot-password">
-                      <span className="font-12-regular text-primary">
-                        Forgot password?
-                      </span>
-                    </Link> */}
                   </Form.Label>
                   <Form.Control
                     type="password"

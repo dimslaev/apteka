@@ -23,7 +23,7 @@ export default function SearchBar() {
     setState({ ...state, showBar: !state.showBar });
   };
 
-  async function handleSubmit(e) {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     setState({ ...state, loading: true, error: false });
@@ -53,7 +53,7 @@ export default function SearchBar() {
       showBar: false,
       loading: false,
     });
-  }
+  };
 
   return (
     <Row>

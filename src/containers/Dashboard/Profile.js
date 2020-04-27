@@ -58,19 +58,19 @@ export default function Profile(props) {
   const [errors, setErrors] = useState(defaultErrors);
   const [loading, setLoading] = useState(false);
 
-  function handleFieldChange(event) {
+  const handleFieldChange = (event) => {
     const id = event.target.id;
     const value = event.target.value;
     const fieldsClone = { ...fields };
     fieldsClone[id] = value;
     setFields(fieldsClone);
-  }
+  };
 
-  function handleFieldFocus() {
+  const handleFieldFocus = () => {
     setErrors(defaultErrors);
-  }
+  };
 
-  function validateForm() {
+  const validateForm = () => {
     const cloneErrors = { ...errors };
     let isValid = true;
     Object.entries(fields).forEach(([key, value]) => {
@@ -82,9 +82,9 @@ export default function Profile(props) {
     setErrors(cloneErrors);
 
     return isValid;
-  }
+  };
 
-  async function handleSubmit(event) {
+  const handleSubmit = async (event) => {
     event.preventDefault();
 
     if (loading || !validateForm() || fields === props.provider.profile) return;
@@ -130,7 +130,7 @@ export default function Profile(props) {
     props.setModalTitle("Details updated");
     props.setModalContent("Your store details have been saved.");
     props.setModalShow(true);
-  }
+  };
 
   return (
     <section id={props.id + "-section"} className="settings-section pt-3 pb-4">

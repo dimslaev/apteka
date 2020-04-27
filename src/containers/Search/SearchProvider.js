@@ -6,30 +6,23 @@ import { geocollectionProviders } from "../../AccountStore";
 
 export const SearchContext = React.createContext(null);
 
-// sessionStorage.setItem("from", "address-position");
-// sessionStorage.setItem(
-//   "address",
-//   JSON.stringify({
-//     no: "10",
-//     street: "Timok",
-//     city: "Plovdiv",
-//   }),
-// );
-// sessionStorage.setItem(
-//   "address-position",
-//   JSON.stringify({
-//     latitude: "42.15530",
-//     longitude: "24.73505",
-//     city: "Plovdiv",
-//   }),
-// );
-
-//
-//
-//
-//
-//
-//
+sessionStorage.setItem("from", "address-position");
+sessionStorage.setItem(
+  "address",
+  JSON.stringify({
+    no: "10",
+    street: "Timok",
+    city: "Plovdiv",
+  }),
+);
+sessionStorage.setItem(
+  "address-position",
+  JSON.stringify({
+    latitude: "42.15530",
+    longitude: "24.73505",
+    city: "Plovdiv",
+  }),
+);
 
 const defaultState = {
   searchResults: [],
@@ -103,17 +96,6 @@ export default function SearchProvider({ children }) {
   );
 }
 
-function filterSortResults(searchTerm, searchResults) {
-  // Return only results for searched product
-  const results = searchResults.filter((item) => {
-    const products = item.data().products;
-    const match = products.find((p) => p.id === searchTerm);
-    return match.qty > 0;
-  });
-
-  return results.sort((a, b) => a.distance - b.distance);
-}
-
 export async function getSearchResults(searchTerm, coordinates, radius) {
   const geosnapshot = await geocollectionProviders
     .near({
@@ -125,6 +107,17 @@ export async function getSearchResults(searchTerm, coordinates, radius) {
   if (!geosnapshot.docs.length) return [];
 
   return filterSortResults(searchTerm, geosnapshot.docs);
+}
+
+function filterSortResults(searchTerm, searchResults) {
+  // Return only results for searched product
+  const results = searchResults.filter((item) => {
+    const products = item.data().products;
+    const match = products.find((p) => p.id === searchTerm);
+    return match.qty > 0;
+  });
+
+  return results.sort((a, b) => a.distance - b.distance);
 }
 
 async function getLatLng() {

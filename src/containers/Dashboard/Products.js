@@ -19,8 +19,8 @@ types.forEach((item, index) => {
 function mapProducts(provider) {
   const products = [];
   if (!provider.products.length) return defaultProducts;
-  defaultProducts.forEach(item => {
-    const product = provider.products.find(p => p.id === item.id);
+  defaultProducts.forEach((item) => {
+    const product = provider.products.find((p) => p.id === item.id);
     if (product) products.push(product);
     else products.push(item);
   });
@@ -31,30 +31,30 @@ export default function Products(props) {
   const [loading, setLoading] = useState(false);
   const [products, setProducts] = useState(mapProducts(props.provider));
 
-  function handleFieldChange(event) {
+  const handleFieldChange = (event) => {
     const id = event.target.id.split("_")[0];
     const type = event.target.id.split("_")[1];
     const value = event.target.value;
     const productsClone = [...products];
 
-    productsClone.forEach(item => {
+    productsClone.forEach((item) => {
       if (item.id === id) item[type] = value;
     });
 
     setProducts(productsClone);
-  }
+  };
 
-  function handleFieldFocus(event) {
+  const handleFieldFocus = (event) => {
     if (event.target.value === "0")
       handleFieldChange({ target: { id: event.target.id, value: "" } });
-  }
+  };
 
-  function handleFieldBlur(event) {
+  const handleFieldBlur = (event) => {
     if (event.target.value === "")
       handleFieldChange({ target: { id: event.target.id, value: "0" } });
-  }
+  };
 
-  async function handleSubmit(event) {
+  const handleSubmit = async (event) => {
     event.preventDefault();
     if (
       loading ||
@@ -67,7 +67,7 @@ export default function Products(props) {
 
     const productsClone = [];
 
-    products.forEach(p => {
+    products.forEach((p) => {
       productsClone.push({ ...p, qty: +p.qty });
     });
 
@@ -82,7 +82,7 @@ export default function Products(props) {
         props.setModalContent("Your available products have been updated.");
         props.setModalShow(true);
       });
-  }
+  };
 
   return (
     <section id={props.id + "-section"} className="settings-section pt-3 pb-4">
