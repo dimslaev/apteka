@@ -9,10 +9,8 @@ export default function SearchFacets() {
 
   useEffect(() => {
     if (!searchResults.length) return;
-
     const firstSearchResultProducts = searchResults[0].data().products;
     const arr = JSON.parse(JSON.stringify(firstSearchResultProducts));
-
     searchResults.forEach((item, index) => {
       if (index !== 0) {
         const products = item.data().products;

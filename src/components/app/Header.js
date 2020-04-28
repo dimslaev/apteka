@@ -10,7 +10,6 @@ export default function Header({ inverted = false }) {
   const history = useHistory();
 
   const isNavItemActive = (pathname) => {
-    console.log(history);
     return history.location.pathname === pathname;
   };
 

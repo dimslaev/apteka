@@ -12,11 +12,8 @@ export default function SearchResults() {
 
   useEffect(() => {
     if (!scrollAreaRef.current) return;
-
     const activeResult = scrollAreaRef.current.childNodes[activeIndex];
-
     if (!activeResult) return;
-
     smoothScrollTo(scrollAreaRef.current, activeResult, 0);
   }, [scrollAreaRef, activeIndex]);
 

@@ -97,7 +97,6 @@ export default function Profile(props) {
       fields.city !== props.provider.profile.city
     ) {
       const coordinatesResponse = await getLatLng(fields.address, fields.city);
-      console.log(coordinatesResponse);
 
       if (!coordinatesResponse.latt) {
         setLoading(false);

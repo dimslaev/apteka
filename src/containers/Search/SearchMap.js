@@ -6,88 +6,122 @@ import mapboxgl from "mapbox-gl";
 mapboxgl.accessToken = process.env.REACT_APP_MAPBOX_KEY;
 
 let lastSearchResults = [];
+let markers = [];
 
 export default function SearchMap() {
   const [mapInstance, setMapInstance] = useState(null);
   const mapRef = useRef(null);
   const { state, setState } = useContext(SearchContext);
+  const {
+    from,
+    userPosition,
+    addressPosition,
+    activeIndex,
+    searchResults,
+  } = state;
+  const position = from === "user-position" ? userPosition : addressPosition;
 
+  const handleMarkerClick = (e) => {
+    const markerEl = e.originalEvent.target.closest(".mapboxgl-marker");
+    if (!markerEl) return;
+    setState({ ...state, activeIndex: +markerEl.dataset.index });
+  };
+
+  // Init map instance
   useEffect(() => {
-    const {
-      from,
-      userPosition,
-      addressPosition,
-      searchResults,
-      activeIndex,
-    } = state;
-
-    const position = from === "user-position" ? userPosition : addressPosition;
-
     if (!mapRef.current || isEmpty(position) || !position) return;
-
-    const markers = [];
-    const bounds = new mapboxgl.LngLatBounds();
-    const myCoords = [position.longitude, position.latitude];
-
-    function handleMarkerClick(e) {
-      const marker = e.originalEvent.target.closest(".mapboxgl-marker");
-      if (!marker) return;
-
-      const index = +marker.dataset.index;
-
-      setState({ ...state, activeIndex: index });
-    }
 
     if (!mapInstance) {
       setMapInstance(initMapbox(mapRef.current, position));
       return;
     }
 
-    const markerMe = initMarker(mapInstance, myCoords, -1, activeIndex);
-
-    markers.push(markerMe);
-    bounds.extend(myCoords);
-
-    if (searchResults.length > 0) {
-      searchResults.forEach(function (item, index) {
-        const coords = [
-          item.data().coordinates.longitude,
-          item.data().coordinates.latitude,
-        ];
-
-        const marker = initMarker(mapInstance, coords, index, activeIndex);
-
-        markers.push(marker);
-        bounds.extend(coords);
-      });
-
-      if (searchResults !== lastSearchResults) {
-        mapInstance.fitBounds(bounds, {
-          padding: { top: 50, bottom: 50, left: 50, right: 50 },
-          easing(t) {
-            return t * (2 - t);
-          },
-        });
-        lastSearchResults = searchResults;
-      }
-    }
-
-    mapInstance.on("load", () => {
-      mapInstance.on("click", handleMarkerClick);
-    });
-
     return function cleanup() {
-      markers.forEach((item) => {
-        if (item._element) item._element.parentNode.removeChild(item._element);
-      });
-
-      if (mapInstance) mapInstance.off("click");
-
       if (window.location.pathname.indexOf("search") === -1) {
         mapInstance.remove();
       }
     };
-  }, [mapRef, mapInstance, state, setState]);
+  }, [mapRef, mapInstance, position]);
+
+  // Attach marker click handler
+  useEffect(() => {
+    if (!mapInstance || !searchResults.length) return;
+
+    mapInstance.on("click", handleMarkerClick);
+
+    return function cleanup() {
+      mapInstance.off("click", handleMarkerClick);
+    };
+  }, [mapInstance, searchResults, handleMarkerClick]);
+
+  // Create me marker
+  useEffect(() => {
+    if (!mapInstance) return;
+
+    const myCoords = [position.longitude, position.latitude];
+    const markerMe = initMarker(mapInstance, myCoords, -1);
+
+    return function cleanup() {
+      markerMe.remove();
+    };
+  }, [mapInstance, searchResults, position]);
+
+  // Create search results marker
+  useEffect(() => {
+    if (!mapInstance || !searchResults.length) return;
+
+    const bounds = new mapboxgl.LngLatBounds();
+
+    searchResults.forEach(function (item, index) {
+      const coords = [
+        item.data().coordinates.longitude,
+        item.data().coordinates.latitude,
+      ];
+      const marker = initMarker(mapInstance, coords, index, activeIndex);
+      markers.push(marker);
+      bounds.extend(coords);
+    });
+
+    if (searchResults !== lastSearchResults) {
+      mapInstance.fitBounds(bounds, {
+        padding: { top: 50, bottom: 50, left: 50, right: 50 },
+        easing(t) {
+          return t * (2 - t);
+        },
+      });
+      lastSearchResults = searchResults;
+    }
+
+    return function cleanup() {
+      markers.forEach((item) => {
+        item.remove();
+      });
+      markers = [];
+    };
+  }, [mapInstance, searchResults]);
+
+  // On active index change
+  useEffect(() => {
+    if (!mapInstance || !markers.length) return;
+
+    markers.forEach((item) => {
+      item.remove();
+    });
+
+    searchResults.forEach(function (item, index) {
+      const coords = [
+        item.data().coordinates.longitude,
+        item.data().coordinates.latitude,
+      ];
+      const marker = initMarker(mapInstance, coords, index, activeIndex);
+
+      if (index === activeIndex) {
+        mapInstance.flyTo({ center: coords });
+      }
+
+      markers.push(marker);
+    });
+  }, [mapInstance, activeIndex]);
 
   return (
     <div className="map-container">

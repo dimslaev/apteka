@@ -59,7 +59,6 @@ export default function Register(props) {
     };
 
     const response = await signUp(credentials);
-    console.log("register.js", response);
 
     setLoading(false);
 

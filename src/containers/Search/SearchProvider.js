@@ -6,23 +6,23 @@ import { geocollectionProviders } from "../../AccountStore";
 
 export const SearchContext = React.createContext(null);
 
-sessionStorage.setItem("from", "address-position");
-sessionStorage.setItem(
-  "address",
-  JSON.stringify({
-    no: "10",
-    street: "Timok",
-    city: "Plovdiv",
-  }),
-);
-sessionStorage.setItem(
-  "address-position",
-  JSON.stringify({
-    latitude: "42.15530",
-    longitude: "24.73505",
-    city: "Plovdiv",
-  }),
-);
+// sessionStorage.setItem("from", "address-position");
+// sessionStorage.setItem(
+//   "address",
+//   JSON.stringify({
+//     no: "10",
+//     street: "Timok",
+//     city: "Plovdiv",
+//   }),
+// );
+// sessionStorage.setItem(
+//   "address-position",
+//   JSON.stringify({
+//     latitude: "42.15530",
+//     longitude: "24.73505",
+//     city: "Plovdiv",
+//   }),
+// );
 
 const defaultState = {
   searchResults: [],
@@ -52,16 +52,15 @@ const defaultState = {
     title: "",
     content: "",
   },
-  activeIndex: -1,
+  activeIndex: 2,
 };
 
 export default function SearchProvider({ children }) {
   const [state, setState] = useState(defaultState);
+  const { userPosition, addressPosition } = state;
 
   useEffect(() => {
-    const { userPosition, addressPosition } = state;
-
-    if (userPosition) return;
+    if (userPosition && addressPosition) return;
 
     getLatLng().then(function (response) {
       if (response.status === 200) {
@@ -78,7 +77,7 @@ export default function SearchProvider({ children }) {
         });
       }
     });
-  }, [state]);
+  }, []);
 
   return (
     <SearchContext.Provider value={{ state, setState }}>
