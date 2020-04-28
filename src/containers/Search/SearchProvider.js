@@ -6,23 +6,23 @@ import { geocollectionProviders } from "../../AccountStore";
 
 export const SearchContext = React.createContext(null);
 
-// sessionStorage.setItem("from", "address-position");
-// sessionStorage.setItem(
-//   "address",
-//   JSON.stringify({
-//     no: "10",
-//     street: "Timok",
-//     city: "Plovdiv",
-//   }),
-// );
-// sessionStorage.setItem(
-//   "address-position",
-//   JSON.stringify({
-//     latitude: "42.15530",
-//     longitude: "24.73505",
-//     city: "Plovdiv",
-//   }),
-// );
+sessionStorage.setItem("from", "address-position");
+sessionStorage.setItem(
+  "address",
+  JSON.stringify({
+    no: "10",
+    street: "Timok",
+    city: "Plovdiv",
+  }),
+);
+sessionStorage.setItem(
+  "address-position",
+  JSON.stringify({
+    latitude: "42.15530",
+    longitude: "24.73505",
+    city: "Plovdiv",
+  }),
+);
 
 const defaultState = {
   searchResults: [],
@@ -38,14 +38,6 @@ const defaultState = {
   radius: JSON.parse(sessionStorage.getItem("radius")) || 1,
   from: sessionStorage.getItem("from") || "user-position",
   loading: false,
-  facets: {
-    mask: true,
-    gloves: true,
-    sanitizer: true,
-    vitaminC: true,
-    vitaminD: true,
-    vitaminZn: true,
-  },
   error: false,
   modal: {
     show: false,
@@ -56,12 +48,12 @@ const defaultState = {
 };
 
 export default function SearchProvider({ children }) {
-  const [state, setState] = useState(defaultState);
-  const { userPosition, addressPosition } = state;
+  const [state, updateState] = useState(defaultState);
+  const setState = (obj) => updateState({ ...state, ...obj });
+
+  const { addressPosition } = state;
 
   useEffect(() => {
-    if (userPosition && addressPosition) return;
-
     getLatLng().then(function (response) {
       if (response.status === 200) {
         sessionStorage.setItem("user-position", JSON.stringify(response.data));
@@ -71,7 +63,6 @@ export default function SearchProvider({ children }) {
             JSON.stringify(response.data),
           );
         setState({
-          ...state,
           userPosition: response.data,
           addressPosition: addressPosition ? addressPosition : response.data,
         });
@@ -86,7 +77,7 @@ export default function SearchProvider({ children }) {
         show={state.modal.show}
         title={state.modal.title}
         onHide={() =>
-          setState({ ...state, modal: { show: false, title: "", content: "" } })
+          setState({ modal: { show: false, title: "", content: "" } })
         }
       >
         {state.modal.content}

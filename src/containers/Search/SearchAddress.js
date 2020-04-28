@@ -24,7 +24,7 @@ export default function SearchAddress(props) {
   const handleFieldChange = (e) => {
     const id = e.target.id;
     const value = e.target.value;
-    setState({ ...state, address: { ...address, [id]: value } });
+    setState({ address: { ...address, [id]: value } });
   };
 
   const handleFieldFocus = () => {
@@ -39,10 +39,10 @@ export default function SearchAddress(props) {
   const handleAddressModalClose = () => {
     console.log("here");
     if (isEmpty(addressPosition)) {
-      setState({ ...state, from: "user-position" });
+      setState({ from: "user-position" });
       sessionStorage.setItem("from", "user-position");
     }
-    setState({ ...state, addressModal: false });
+    setState({ addressModal: false });
   };
 
   const validateForm = () => {
@@ -109,7 +109,6 @@ export default function SearchAddress(props) {
     const results = await getSearchResults(product, coordinates, radius);
 
     setState({
-      ...state,
       addressPosition: position,
       addressModal: false,
       error: !results.length ? "error-no-results" : false,
@@ -117,6 +116,7 @@ export default function SearchAddress(props) {
       showBar: false,
       loading: false,
     });
+    setFormLoading(false);
   };
 
   return (

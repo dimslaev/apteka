@@ -24,7 +24,7 @@ export default function SearchMap() {
   const handleMarkerClick = (e) => {
     const markerEl = e.originalEvent.target.closest(".mapboxgl-marker");
     if (!markerEl) return;
-    setState({ ...state, activeIndex: +markerEl.dataset.index });
+    setState({ activeIndex: +markerEl.dataset.index });
   };
 
   // Init map instance

@@ -49,7 +49,7 @@ function ResultItem({ item, index }) {
   return (
     <Card
       className={`result${activeIndex === index ? " active" : ""}`}
-      onClick={() => setState({ ...state, activeIndex: index })}
+      onClick={() => setState({ activeIndex: index })}
     >
       <Card.Body>
         <Row>

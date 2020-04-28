@@ -20,13 +20,13 @@ export default function SearchBar() {
   const formEl = useRef(null);
 
   const handleShowBar = () => {
-    setState({ ...state, showBar: !state.showBar });
+    setState({ showBar: !state.showBar });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    setState({ ...state, loading: true, error: false });
+    setState({ loading: true, error: false });
 
     const position = from === "user-position" ? userPosition : addressPosition;
 
@@ -151,7 +151,7 @@ function FormGroupDistance() {
   const { radius } = state;
 
   const handleRadiusChange = (radius) => {
-    setState({ ...state, radius });
+    setState({ radius });
     sessionStorage.setItem("radius", radius);
   };
 
@@ -179,7 +179,7 @@ function FormGroupProduct() {
   const { product } = state;
 
   const handleProductChange = (id) => {
-    setState({ ...state, product: id });
+    setState({ product: id });
     sessionStorage.setItem("product", id);
   };
 
