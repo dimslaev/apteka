@@ -21,12 +21,6 @@ export default function SearchMap() {
   } = state;
   const position = from === "user-position" ? userPosition : addressPosition;
 
-  const handleMarkerClick = (e) => {
-    const markerEl = e.originalEvent.target.closest(".mapboxgl-marker");
-    if (!markerEl) return;
-    setState({ activeIndex: +markerEl.dataset.index });
-  };
-
   // Init map instance
   useEffect(() => {
     if (!mapRef.current || isEmpty(position) || !position) return;
@@ -47,12 +41,18 @@ export default function SearchMap() {
   useEffect(() => {
     if (!mapInstance || !searchResults.length) return;
 
+    const handleMarkerClick = (e) => {
+      const markerEl = e.originalEvent.target.closest(".mapboxgl-marker");
+      if (!markerEl) return;
+      setState({ activeIndex: +markerEl.dataset.index });
+    };
+
     mapInstance.on("click", handleMarkerClick);
 
     return function cleanup() {
       mapInstance.off("click", handleMarkerClick);
     };
-  }, [mapInstance, searchResults, handleMarkerClick]);
+  }, [mapInstance, searchResults, setState]);
 
   // Create me marker
   useEffect(() => {
@@ -98,7 +98,7 @@ export default function SearchMap() {
       });
       markers = [];
     };
-  }, [mapInstance, searchResults]);
+  }, [mapInstance, searchResults, activeIndex]);
 
   // On active index change
   useEffect(() => {
@@ -121,7 +121,7 @@ export default function SearchMap() {
 
       markers.push(marker);
     });
-  }, [mapInstance, activeIndex]);
+  }, [mapInstance, searchResults, activeIndex]);
 
   return (
     <div className="map-container">
