@@ -1,13 +1,12 @@
 import React, { useState, useContext } from "react";
+import { Link, useHistory } from "react-router-dom";
+import { Container, Form } from "react-bootstrap";
+import { AccountContext } from "../AccountStore";
 import Header from "../components/app/Header";
 import Footer from "../components/app/Footer";
 import ButtonLoader from "../components/base/ButtonLoader";
-import { Container, Form } from "react-bootstrap";
-import { Link } from "react-router-dom";
 import Icon from "../components/base/Icon";
 import { useFormFields, validateEmail } from "../utils";
-import { AccountContext } from "../AccountStore";
-import { useHistory } from "react-router-dom";
 
 const defaultErrors = {
   email: false,

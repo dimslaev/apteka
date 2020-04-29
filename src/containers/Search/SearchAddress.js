@@ -1,8 +1,8 @@
 import React, { useState, useRef, useContext } from "react";
-import { Col, Form, Modal, Button } from "react-bootstrap";
-import ButtonLoader from "../../components/base/ButtonLoader";
-import { SearchContext, getSearchResults } from "./SearchProvider";
 import axios from "axios";
+import ButtonLoader from "../../components/base/ButtonLoader";
+import { Col, Form, Modal, Button } from "react-bootstrap";
+import { SearchContext, getSearchResults } from "./SearchProvider";
 import { isEmpty } from "../../utils";
 
 const defaultErrors = {

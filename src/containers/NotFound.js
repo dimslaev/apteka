@@ -1,8 +1,8 @@
 import React from "react";
+import { useHistory } from "react-router-dom";
 import { Container, Row, Col, Button } from "react-bootstrap";
 import Header from "../components/app/Header";
 import Footer from "../components/app/Footer";
-import { useHistory } from "react-router-dom";
 
 export default function NotFound() {
   const history = useHistory();

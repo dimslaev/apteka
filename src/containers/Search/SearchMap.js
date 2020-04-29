@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect, useContext } from "react";
+import mapboxgl from "mapbox-gl";
 import { SearchContext } from "./SearchProvider";
 import { isEmpty } from "../../utils";
-import mapboxgl from "mapbox-gl";
 
 mapboxgl.accessToken = process.env.REACT_APP_MAPBOX_KEY;
 

@@ -4,7 +4,6 @@ import Header from "../../components/app/Header";
 import Footer from "../../components/app/Footer";
 import SearchResults from "./SearchResults";
 import SearchFacets from "./SearchFacets";
-
 import SearchBar from "./SearchBar";
 import SearchMap from "./SearchMap";
 import SearchAddress from "./SearchAddress";

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
+import { Accordion, Card, Container, Row, Col } from "react-bootstrap";
 import Header from "../../components/app/Header";
 import Footer from "../../components/app/Footer";
-import { Accordion, Card, Container, Row, Col } from "react-bootstrap";
 import Modal from "../../components/base/Modal";
 import Profile from "./Profile";
 import Products from "./Products";
@@ -11,13 +11,13 @@ const components = [
   {
     id: "provider",
     title: "Store Details",
-    c: props => <Profile {...props} />,
+    c: (props) => <Profile {...props} />,
     roles: ["PERMITTED"],
   },
   {
     id: "products",
     title: "Available Products",
-    c: props => <Products {...props} />,
+    c: (props) => <Products {...props} />,
     roles: ["PERMITTED"],
   },
 ];
